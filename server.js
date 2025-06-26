@@ -78,28 +78,3 @@ app.get('/api/gold-futures', (req, res) => res.json(prices.goldFutures));
 app.get('/api/dxy', (req, res) => res.json(prices.dxy));
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-Then click “Commit new file” at the bottom.
-
-🔹 2. package.json
-Now repeat and create a new file:
-
-File name: package.json
-
-Paste this:
-
-json
-Copy
-Edit
-{
-  "name": "gold-tracker",
-  "version": "1.0.0",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "axios": "^1.6.2",
-    "cheerio": "^1.0.0-rc.12",
-    "express": "^4.18.2",
-    "node-cron": "^3.0.2"
-  }
-}
