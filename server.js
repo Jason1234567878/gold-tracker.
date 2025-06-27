@@ -27,14 +27,13 @@ async function fetchGoldSpot() {
   }
 }
 
-// 2. Gold Futures (COMEX: GC1!)
-async function fetchGoldFutures() {
+// 2. Gold Futures (COMEX: GC1!)async function fetchGoldFutures() {
   try {
-    const { data } = await axios.get('https://www.marketwatch.com/investing/future/gold', {
+    const { data } = await axios.get('https://www.investing.com/commodities/gold', {
       headers: { 'User-Agent': 'Mozilla/5.0' }
     });
     const $ = cheerio.load(data);
-    const price = $('.value').first().text().replace(',', '').trim();
+    const price = $('[data-test="instrument-price-last"]').first().text().replace(',', '');
     return parseFloat(price);
   } catch (e) {
     console.error('Gold futures scrape error:', e.message);
