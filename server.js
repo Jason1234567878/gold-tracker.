@@ -45,14 +45,12 @@ async function fetchGoldSpot() {
 // 3. DXY Index (Dollar Index)
 async function fetchDXY() {
   try {
-    const { data } = await axios.get('https://www.investing.com/indices/usdollar', {
+    const { data } = await axios.get('https://api.twelvedata.com/quote?symbol=DXY&apikey=YOUR_API_KEY', {
       headers: { 'User-Agent': 'Mozilla/5.0' }
     });
-    const $ = cheerio.load(data);
-    const price = $('[data-test="instrument-price-last"]').first().text().replace(',', '');
-    return parseFloat(price);
+    return parseFloat(data.price);
   } catch (e) {
-    console.error('DXY scrape error:', e.message);
+    console.error('DXY API error:', e.message);
     return null;
   }
 }
