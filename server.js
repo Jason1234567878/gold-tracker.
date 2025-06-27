@@ -6,29 +6,28 @@ const cron = require('node-cron');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Store all prices in memory
 let prices = {
   goldSpot: { price: null, lastUpdated: null },
   goldFutures: { price: null, lastUpdated: null },
   dxy: { price: null, lastUpdated: null }
 };
 
-// 1. Gold Spot (XAU/USD)
+// Fetch Gold Spot (XAU/USD)
 async function fetchGoldSpot() {
   try {
-    const { data } = await axios.get('https://www.investing.com/commodities/gold', {
+    const { data } = await axios.get('https://www.investing.com/currencies/xau-usd', {
       headers: { 'User-Agent': 'Mozilla/5.0' }
     });
     const $ = cheerio.load(data);
     const priceText = $('[data-test="instrument-price-last"]').first().text().replace(',', '');
     return parseFloat(priceText);
   } catch (error) {
-    console.error('Gold Spot Error:', error.message);
+    console.error('Gold Spot fetch failed:', error.message);
     return null;
   }
 }
 
-// 2. Gold Futures (dedicated page)
+// Fetch Gold Futures (GC1!)
 async function fetchGoldFutures() {
   try {
     const { data } = await axios.get('https://www.investing.com/commodities/gold-futures', {
@@ -38,12 +37,12 @@ async function fetchGoldFutures() {
     const priceText = $('[data-test="instrument-price-last"]').first().text().replace(',', '');
     return parseFloat(priceText);
   } catch (error) {
-    console.error('Gold Futures Error:', error.message);
+    console.error('Gold Futures fetch failed:', error.message);
     return null;
   }
 }
 
-// 3. DXY Index
+// Fetch DXY
 async function fetchDXY() {
   try {
     const { data } = await axios.get('https://www.investing.com/indices/usdollar', {
@@ -53,12 +52,12 @@ async function fetchDXY() {
     const priceText = $('[data-test="instrument-price-last"]').first().text().replace(',', '');
     return parseFloat(priceText);
   } catch (error) {
-    console.error('DXY Error:', error.message);
+    console.error('DXY fetch failed:', error.message);
     return null;
   }
 }
 
-// Refresh all prices every 2 minutes
+// Update prices every 2 minutes
 cron.schedule('*/2 * * * *', async () => {
   prices.goldSpot.price = await fetchGoldSpot();
   prices.goldFutures.price = await fetchGoldFutures();
@@ -69,16 +68,16 @@ cron.schedule('*/2 * * * *', async () => {
   prices.goldFutures.lastUpdated = now;
   prices.dxy.lastUpdated = now;
 
-  console.log(`Prices updated at ${now.toLocaleTimeString()}`);
+  console.log(`✅ Prices updated at ${now.toLocaleTimeString()}`);
 }, { runOnInit: true });
 
-// Routes
+// API Endpoints
 app.get('/', (req, res) => {
   res.send(`
     <h1>Gold Tracker API</h1>
-    <p><strong>Gold Spot:</strong> $${prices.goldSpot.price || 'Loading...'}</p>
-    <p><strong>Gold Futures:</strong> $${prices.goldFutures.price || 'Loading...'}</p>
-    <p><strong>DXY Index:</strong> ${prices.dxy.price || 'Loading...'}</p>
+    <p>Gold Spot: $${prices.goldSpot.price || 'Loading...'}</p>
+    <p>Gold Futures: $${prices.goldFutures.price || 'Loading...'}</p>
+    <p>DXY Index: ${prices.dxy.price || 'Loading...'}</p>
   `);
 });
 
@@ -86,4 +85,4 @@ app.get('/api/gold-spot', (req, res) => res.json(prices.goldSpot));
 app.get('/api/gold-futures', (req, res) => res.json(prices.goldFutures));
 app.get('/api/dxy', (req, res) => res.json(prices.dxy));
 
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🌐 Server running on port ${PORT}`));
