@@ -66,7 +66,7 @@ cron.schedule('*/2 * * * *', async () => {
 
 app.get('/', (req, res) => {
   res.send(`
-    <h1>Gold Tracker API</h1>
+    <h1>Gold Tracker Live</h1>
     <p>Gold Spot: $${prices.goldSpot.price || 'Loading...'}</p>
     <p>Gold Futures: $${prices.goldFutures.price || 'Loading...'}</p>
     <p>DXY Index: ${prices.dxy.price || 'Loading...'}</p>
