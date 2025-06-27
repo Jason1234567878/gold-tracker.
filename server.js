@@ -30,12 +30,12 @@ async function fetchGoldSpot() {
 // 2. Gold Futures (from table)
 async function fetchGoldFutures() {
   try {
-    const { data } = await axios.get('https://www.investing.com/commodities/gold', {
+    const { data } = await axios.get('https://www.investing.com/commodities/gold-futures', {
       headers: { 'User-Agent': 'Mozilla/5.0' }
     });
     const $ = cheerio.load(data);
-    const priceText = $('table.genTbl.closedTbl tbody tr').first().find('td').eq(1).text();
-    return parseFloat(priceText.replace(',', '').trim());
+    const priceText = $('[data-test="instrument-price-last"]').first().text().replace(',', '').trim();
+    return parseFloat(priceText);
   } catch (error) {
     console.error('Gold futures scrape failed:', error.message);
     return null;
