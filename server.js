@@ -28,16 +28,16 @@ async function fetchGoldSpot() {
 }
 
 // 2. Gold Futures (COMEX: GC1!)async function fetchGoldFutures() {
-  async function fetchGoldFutures() {
+ async function fetchGoldFutures() {
   try {
-    const { data } = await axios.get('https://finance.yahoo.com/quote/GC=F', {
+    const { data } = await axios.get('https://www.cmegroup.com/api/market-data/quotes/gc', {
       headers: { 'User-Agent': 'Mozilla/5.0' }
     });
-    const $ = cheerio.load(data);
-    const price = $('[data-field="regularMarketPrice"]').first().text().replace(',', '');
+    // Extract last price from CME's JSON response
+    const price = data.quotes[0].last;
     return parseFloat(price);
   } catch (e) {
-    console.error('Gold futures scrape error:', e.message);
+    console.error('Gold futures API error:', e.message);
     return null;
   }
 }
